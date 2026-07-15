@@ -10,7 +10,7 @@
 <style>
 /* ============================= RESET & VARIABLES ============================= */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
+html{scroll-behavior:smooth; overflow-x: hidden;}
 :root{
   --gold:#c6a15b;
   --gold-light:#e7d3a3;
@@ -260,7 +260,7 @@ html[data-theme="dark"] .nav-mark em{color:var(--gold-light);}
 .nav-links a:hover{color:var(--text);}
 .nav-links a:hover::after{width:100%;}
 
-.nav-toggles{display:flex;gap:10px;align-items:center;}
+.nav-toggles{display:flex;gap:10px;align-items:center;flex-shrink:0;}
 .icon-btn{
   width:38px;height:38px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
@@ -273,9 +273,40 @@ html[data-theme="dark"] .nav-mark em{color:var(--gold-light);}
 .icon-btn .icon-on{display:none;}
 .icon-btn.active .icon-off{display:none;}
 .icon-btn.active .icon-on{display:block;}
-
+/* Mobile hamburger toggle (hidden on desktop) */
+.nav-hamburger{
+  display:none;
+  width:38px;height:38px;border-radius:50%;
+  align-items:center;justify-content:center;
+  border:1px solid var(--line);
+  background:var(--surface);
+  flex-shrink:0;
+}
+.nav-hamburger svg{width:18px;height:18px;stroke:var(--text);fill:none;stroke-width:1.7;}
+.nav-hamburger .icon-close{display:none;}
+.nav-hamburger.active .icon-open{display:none;}
+.nav-hamburger.active .icon-close{display:block;}
 @media (max-width:760px){
-  .nav-links{display:none;}
+  .nav-links{
+    position:fixed;
+    top:0;left:0;right:0;
+    flex-direction:column;
+    gap:0;
+    background:var(--surface-strong);
+    backdrop-filter:blur(16px);
+    padding:90px 32px 28px;
+    box-shadow:0 20px 40px rgba(95,68,29,.14);
+    transform:translateY(-110%);
+    opacity:0;
+    transition:transform .45s cubic-bezier(.65,0,.35,1), opacity .35s ease;
+    z-index:400;
+    max-height:100vh;
+    overflow-y:auto;
+  }
+  .nav-links.open{transform:translateY(0);opacity:1;}
+  .nav-links li{width:100%;border-bottom:1px solid var(--line);}
+  .nav-links a{display:block;padding:16px 4px;font-size:.85rem;}
+  .nav-hamburger{display:flex;}
 }
 
 /* ============================= HERO ============================= */
@@ -317,8 +348,9 @@ html[data-theme="dark"] .nav-mark em{color:var(--gold-light);}
     radial-gradient(circle at 35% 30%, rgba(255,255,255,.5), transparent 55%),
     linear-gradient(150deg, var(--gold-light), var(--rose));
   display:flex;align-items:center;justify-content:center;
+  overflow: hidden;
 }
-.hero-frame-inner svg{width:60%;height:60%;opacity:.85;}
+.hero-frame-inner img{width:100%;height:100%;opacity:.85;}
 
 .hero-eyebrow{opacity:0;animation:fadeUp 1s ease forwards;animation-delay:.1s;}
 .hero-title{
@@ -460,6 +492,13 @@ html[data-theme="dark"] .count-num{color:var(--gold-light);}
   position:relative;border-radius:16px;overflow:hidden;cursor:pointer;
   border:1px solid var(--line);
 }
+.g-item img{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  transition:transform .6s ease;
+}
+.g-item:hover img{transform:scale(1.12);}
 .g-item .g-fill{
   position:absolute;inset:0;
   display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;
@@ -470,7 +509,7 @@ html[data-theme="dark"] .count-num{color:var(--gold-light);}
 .g-item .g-fill span{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.85rem;color:#fff;opacity:.9;}
 .g-item:hover .g-fill{transform:scale(1.12);}
 .g-item::after{
-  content:'';position:absolute;inset:0;background:rgba(20,15,8,0);transition:background .4s ease;
+  content:'';position:absolute;inset:0;background:rgba(20,15,8,0);transition:background .4s ease;pointer-events:none;
 }
 .g-item:hover::after{background:rgba(20,15,8,.12);}
 
@@ -494,13 +533,17 @@ html[data-theme="dark"] .count-num{color:var(--gold-light);}
   transform:scale(.92);transition:transform .4s ease;
 }
 #lightbox.open .lightbox-box{transform:scale(1);}
-.lightbox-box svg{width:50px;height:50px;opacity:.85;}
-.lightbox-box span{font-family:'Cormorant Garamond',serif;font-style:italic;color:#fff;font-size:1.1rem;}
+.lightbox-box img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+}
+.lightbox-box svg{width:50px;height:50px;opacity:.85;position:relative;z-index:1;}
+.lightbox-box span{font-family:'Cormorant Garamond',serif;font-style:italic;color:#fff;font-size:1.1rem;position:relative;z-index:1;text-shadow:0 2px 10px rgba(0,0,0,.4);}
 .lightbox-close{
   position:absolute;top:-46px;right:0;
   width:38px;height:38px;border-radius:50%;
   border:1px solid rgba(255,255,255,.4);
   display:flex;align-items:center;justify-content:center;
+  z-index:2;
 }
 .lightbox-close svg{width:16px;height:16px;stroke:#fff;}
 
@@ -521,6 +564,10 @@ html[data-theme="dark"] .count-num{color:var(--gold-light);}
   background:linear-gradient(160deg, var(--gold-light), var(--rose));
   display:flex;align-items:center;justify-content:center;
   box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.couple-portrait img{
+  width:100%;height:100%;object-fit:cover;border-radius:50%;
 }
 .couple-portrait svg{width:46%;height:46%;opacity:.85;}
 .couple-card h3{font-family:'Playfair Display',serif;font-size:1.7rem;margin-bottom:4px;}
@@ -657,7 +704,7 @@ footer{margin-top:60px;text-align:center;color:var(--text-soft);font-size:.78rem
 <!-- ============================= NAV ============================= -->
 <nav id="site-nav">
   <div class="nav-mark">A <em>&amp;</em> S</div>
-  <ul class="nav-links">
+  <ul class="nav-links" id="nav-links">
     <li><a href="#hero">Home</a></li>
     <li><a href="#story">Our Story</a></li>
     <li><a href="#events">Events</a></li>
@@ -673,6 +720,11 @@ footer{margin-top:60px;text-align:center;color:var(--text-soft);font-size:.78rem
       <svg class="icon-off" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
       <svg class="icon-on" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
     </button>
+     <!-- Hamburger button -->
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+    <svg class="icon-open" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    <svg class="icon-close" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
     <audio id="bg-music" loop>
      <source src="wedding-song.mp3" type="audio/mpeg">
     </audio>
@@ -685,7 +737,8 @@ footer{margin-top:60px;text-align:center;color:var(--text-soft);font-size:.78rem
   <div class="hero-inner">
     <div class="hero-frame">
       <div class="hero-frame-inner">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.3"><path d="M12 21s-7.5-4.6-10-9.3C0.3 8 2.1 4 6 4c2.1 0 3.7 1.2 4.5 2.8C11.3 5.2 12.9 4 15 4c3.9 0 5.7 4 4 7.7C19.5 16.4 12 21 12 21z"/></svg>
+        <!-- <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.3"><path d="M12 21s-7.5-4.6-10-9.3C0.3 8 2.1 4 6 4c2.1 0 3.7 1.2 4.5 2.8C11.3 5.2 12.9 4 15 4c3.9 0 5.7 4 4 7.7C19.5 16.4 12 21 12 21z"/></svg> -->
+         <img src="couple1.jpg" alt="">
       </div>
     </div>
     <p class="eyebrow hero-eyebrow">Together with their families</p>
@@ -698,7 +751,7 @@ footer{margin-top:60px;text-align:center;color:var(--text-soft);font-size:.78rem
       </span>
       <span class="hero-pill">
         <svg viewBox="0 0 24 24"><path d="M12 21s-7-5.2-7-11a7 7 0 0114 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
-        Zahra Gardens, Dubai
+        Zahra Gardens, Riyadh
       </span>
     </div>
     <a href="#story" class="btn hero-cta">Discover Our Story</a>
@@ -772,21 +825,21 @@ footer{margin-top:60px;text-align:center;color:var(--text-soft);font-size:.78rem
         <div class="event-icon"><svg viewBox="0 0 24 24"><path d="M12 2c2 4 2 6 0 8-2-2-2-4 0-8z"/><path d="M5 22c0-6 3-9 7-9s7 3 7 9"/></svg></div>
         <h3>Mehndi</h3>
         <p class="event-time">December 9, 2026 · 6:00 PM</p>
-        <p class="event-loc">Al Noor Garden Hall, Dubai</p>
+        <p class="event-loc">Al Noor Garden Hall, Riyadh</p>
         <p class="event-desc">An evening of henna, music, and colour as we welcome the celebrations with our nearest and dearest.</p>
       </div>
       <div class="event-card reveal">
         <div class="event-icon"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5.2-7-11a7 7 0 0114 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
         <h3>Nikah</h3>
         <p class="event-time">December 11, 2026 · 4:00 PM</p>
-        <p class="event-loc">Zahra Gardens Mosque, Dubai</p>
+        <p class="event-loc">Zahra Gardens Mosque, Riyadh</p>
         <p class="event-desc">A sacred ceremony uniting two hearts and two families in faith, love, and lifelong commitment.</p>
       </div>
       <div class="event-card reveal">
         <div class="event-icon"><svg viewBox="0 0 24 24"><path d="M4 21v-7a8 8 0 0116 0v7"/><path d="M4 14h16"/></svg></div>
         <h3>Reception</h3>
         <p class="event-time">December 11, 2026 · 8:00 PM</p>
-        <p class="event-loc">Zahra Gardens Ballroom, Dubai</p>
+        <p class="event-loc">Zahra Gardens Ballroom, Riyadh</p>
         <p class="event-desc">A night of dinner, dancing, and joy — celebrating new beginnings with everyone we hold dear.</p>
       </div>
     </div>
@@ -821,7 +874,7 @@ footer{margin-top:60px;text-align:center;color:var(--text-soft);font-size:.78rem
       <div class="ornament">
         <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
       </div>
-      <p class="section-sub">Our Memorable Shots.</p>
+      <p class="section-sub">Moments from our journey together.</p>
     </div>
     <div class="gallery-grid reveal" id="gallery-grid">
       <!-- generated by JS -->
@@ -832,6 +885,7 @@ footer{margin-top:60px;text-align:center;color:var(--text-soft);font-size:.78rem
 <div id="lightbox">
   <div class="lightbox-box">
     <button class="lightbox-close" id="lightbox-close"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <img id="lightbox-img" src="" alt="">
     <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.3"><path d="M12 21s-7.5-4.6-10-9.3C0.3 8 2.1 4 6 4c2.1 0 3.7 1.2 4.5 2.8C11.3 5.2 12.9 4 15 4c3.9 0 5.7 4 4 7.7C19.5 16.4 12 21 12 21z"/></svg>
     <span>Photo placeholder</span>
   </div>
@@ -849,13 +903,23 @@ footer{margin-top:60px;text-align:center;color:var(--text-soft);font-size:.78rem
     </div>
     <div class="couple-grid">
       <div class="couple-card reveal-left">
-        <div class="couple-portrait"><div class="fill"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.3"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></div></div>
+        <div class="couple-portrait">
+          <div class="fill">
+            <img src="female.png" alt="Sara — The Bride" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.3" style="display:none;"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+          </div>
+        </div>
         <h3>Sara</h3>
         <p class="couple-role">The Bride</p>
         <p>A lover of quiet mornings, old books, and good company — Sara brings warmth to every room she enters.</p>
       </div>
       <div class="couple-card reveal-right">
-        <div class="couple-portrait"><div class="fill"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.3"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></div></div>
+        <div class="couple-portrait">
+          <div class="fill">
+            <img src="male.png" alt="Ahmed — The Groom" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.3" style="display:none;"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+          </div>
+        </div>
         <h3>Ahmed</h3>
         <p class="couple-role">The Groom</p>
         <p>Steady, kind, and endlessly curious — Ahmed has a way of making every plan feel like an adventure.</p>
@@ -917,7 +981,7 @@ footer{margin-top:60px;text-align:center;color:var(--text-soft);font-size:.78rem
       <div class="ornament">
         <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-5.2-7-11a7 7 0 0114 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
       </div>
-      <p class="section-sub">Zahra Gardens, Al Wasl Road, Dubai, UAE</p>
+      <p class="section-sub">Zahra Gardens, Al Wasl Road, Riyadh, UAE</p>
     </div>
     <div class="map-box reveal">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M12 21s-7-5.2-7-11a7 7 0 0114 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
@@ -1093,18 +1157,41 @@ setInterval(updateCountdown, 1000);
 
 /* ---------- Gallery generation + lightbox ---------- */
 var galleryGrid = document.getElementById('gallery-grid');
-var galleryLabels = ['Engagement','First Dance','Family','Henna Night','Together','Forever','The Ring','Celebration'];
-galleryLabels.forEach(function(label){
+
+/* List your 7 gallery photos here — filenames only, keep them
+   in the same folder as this HTML file (or give a full path/URL). */
+var galleryImages = [
+  { src: 'couple1.jpg', label: 'Engagement' },
+  { src: 'couple2.jpg', label: 'First Dance' },
+  { src: 'couple4.jpg', label: 'Family' },
+  { src: 'couple3.jpg', label: 'Henna Night' },
+  { src: 'couple5.jpg', label: 'Together' },
+  { src: 'couple6.jpg', label: 'Forever' },
+  { src: 'couple7.jpg', label: 'Celebration' }
+];
+
+galleryImages.forEach(function(photo){
   var item = document.createElement('div');
   item.className = 'g-item';
-  item.innerHTML = '<div class="g-fill"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.3"><path d="M12 21s-7.5-4.6-10-9.3C0.3 8 2.1 4 6 4c2.1 0 3.7 1.2 4.5 2.8C11.3 5.2 12.9 4 15 4c3.9 0 5.7 4 4 7.7C19.5 16.4 12 21 12 21z"/></svg><span>'+label+'</span></div>';
-  item.addEventListener('click', function(){ openLightbox(label); });
+  item.innerHTML =
+    '<img src="' + photo.src + '" alt="' + photo.label + '" loading="lazy" ' +
+    'onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">' +
+    '<div class="g-fill" style="display:none;">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.3"><path d="M12 21s-7.5-4.6-10-9.3C0.3 8 2.1 4 6 4c2.1 0 3.7 1.2 4.5 2.8C11.3 5.2 12.9 4 15 4c3.9 0 5.7 4 4 7.7C19.5 16.4 12 21 12 21z"/></svg>' +
+      '<span>' + photo.label + '</span>' +
+    '</div>';
+  item.addEventListener('click', function(){ openLightbox(photo.src, photo.label); });
   galleryGrid.appendChild(item);
 });
 
 var lightbox = document.getElementById('lightbox');
-var lightboxLabel = lightbox.querySelector('.lightbox-box span');
-function openLightbox(label){
+var lightboxImg = document.getElementById('lightbox-img');
+var lightboxLabel = lightbox.querySelector('.lightbox-box > span');
+function openLightbox(src, label){
+  lightboxImg.src = src;
+  lightboxImg.alt = label;
+  lightboxImg.style.display = 'block';
+  lightboxImg.onerror = function(){ lightboxImg.style.display = 'none'; };
   lightboxLabel.textContent = label;
   lightbox.classList.add('open');
 }
@@ -1123,7 +1210,23 @@ rsvpForm.addEventListener('submit', function(e){
 
 /* ---------- Get Directions ---------- */
 document.getElementById('directions-btn').href =
-  'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Zahra Gardens, Al Wasl Road, Dubai, UAE');
+  'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Zahra Gardens, Al Wasl Road, Riyadh, UAE');
+  /* ---------- Mobile hamburger menu ---------- */
+var hamburger = document.getElementById('nav-hamburger');
+var navLinks = document.getElementById('nav-links');
+hamburger.addEventListener('click', function(){
+  var isOpen = navLinks.classList.toggle('open');
+  hamburger.classList.toggle('active', isOpen);
+  hamburger.setAttribute('aria-expanded', String(isOpen));
+});
+/* close mobile menu whenever a link is tapped */
+navLinks.querySelectorAll('a').forEach(function(a){
+  a.addEventListener('click', function(){
+    navLinks.classList.remove('open');
+    hamburger.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', 'false');
+  });
+});
 
 })();
 </script>
